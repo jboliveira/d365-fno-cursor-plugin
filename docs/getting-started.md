@@ -9,7 +9,7 @@ First-time setup for the **xpp-fno** Cursor plugin (v1.1).
 | Cursor IDE | Agent mode enabled |
 | D365 F&O X++ project | Contains `AxClass/`, `AxTable/`, `AxForm/`, or similar AOT folders |
 | PowerShell (Windows) | Required for hooks in local IDE sessions |
-| Microsoft Learn MCP (optional) | Configure `user-microsoft-learn` for official F&O documentation lookups |
+| Microsoft Learn MCP (optional) | Configure `microsoft-learn` for official F&O documentation lookups |
 
 ## Install
 

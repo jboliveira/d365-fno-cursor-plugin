@@ -58,7 +58,7 @@ In Cursor Agent chat:
 - Cursor with Agent mode enabled
 - A D365 F&O X++ project with `AxClass/`, `AxTable/`, or similar folders
 - **PowerShell** on Windows for hooks (local IDE only)
-- Recommended: [Microsoft Learn MCP](https://learn.microsoft.com/) configured as `user-microsoft-learn` for official F&O documentation
+- Recommended: [Microsoft Learn MCP](https://learn.microsoft.com/en-us/training/support/mcp) configured as `microsoft-learn` for official F&O documentation
 
 ## Quick start
 

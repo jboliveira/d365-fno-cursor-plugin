@@ -66,9 +66,8 @@ function Get-XppFnoContextBlock {
 
 Platform: **D365 F&O only** (not AX 2012 / Business Central).
 
-**Rules** (from `~/.cursor/`):
-- Scenario router: `./rules/xpp-fno-scenario-router.mdc`
-- Core standards: `./rules/xpp-fno-core.mdc`
+Install the **xpp-fno plugin** (`/add-plugin xpp-fno`) for skills, rules, agents, and commands.
+Project hooks supplement Cloud Agents when plugin hooks are unavailable locally.
 
 **Agents** (orchestration):
 1. `/xpp-fno-planner` - readonly plan before multi-artifact work
@@ -76,10 +75,9 @@ Platform: **D365 F&O only** (not AX 2012 / Business Central).
 3. `/xpp-fno-reviewer` - readonly pre-merge audit (12-step checklist)
 4. `/xpp-fno-debugger` - readonly systematic debugging
 
-**Skills** (workflows):
+**Skills / commands** (workflows):
 - `/xpp-fno-plan`, `/xpp-fno-debug`, `/xpp-fno-verify`, `/xpp-fno-code-review`
-- Hub: `./skills/xpp-fno-development/SKILL.md`
-- Domain skills: `./skills/xpp-fno-*/`
+- Hub skill: `xpp-fno-development`; domain skills: `xpp-fno-*`
 
 Extension hierarchy: metadata -> CoC -> events -> plugins -> LCS request. Never overlayer.
 "@

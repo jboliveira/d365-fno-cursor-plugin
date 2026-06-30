@@ -63,7 +63,7 @@ The `subagentStop` hook automatically chains to `/xpp-fno-reviewer` when the imp
 2. Reads hub skill extension decision tree (`../skills/xpp-fno-development/SKILL.md`).
 3. Applies scenario router (`../rules/xpp-fno-scenario-router.mdc`).
 4. Delegates repo discovery to built-in **explore** (searches `AxClass/`, `AxTable/`, etc.).
-5. Uses **user-microsoft-learn** MCP when Microsoft guidance is unclear.
+5. Uses **microsoft-learn** MCP when Microsoft guidance is unclear.
 
 **Output format:**
 

@@ -99,6 +99,7 @@ Atomic rules count:
 2. Wire in `hooks/hooks.json` with `${CURSOR_PLUGIN_ROOT}` path.
 3. Add shared helpers to `hooks/lib/xpp-fno-common.ps1` if needed.
 4. Document in `docs/hooks.md`; smoke-test with piped JSON.
+5. Sync to [d365-fno-cursor-template](https://github.com/jboliveira/d365-fno-cursor-template): run `scripts/sync-hooks-from-plugin.ps1` in the template repo (sibling plugin path by default).
 
 ## Cursor marketplace publish
 
@@ -135,7 +136,7 @@ Test the plugin locally via symlink — see [Getting started — Test locally be
 
 ### Optional MCP setup
 
-The plugin does not bundle MCP servers. See [MCP setup](mcp-setup.md) and copy [`mcp.template.json`](../mcp.template.json) for recommended **user-microsoft-learn** configuration.
+The plugin does not bundle MCP servers. See [MCP setup](mcp-setup.md) and copy [`mcp.template.json`](../mcp.template.json) for recommended **microsoft-learn** configuration.
 
 ## License
 

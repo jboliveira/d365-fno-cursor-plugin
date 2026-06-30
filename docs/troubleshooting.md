@@ -90,7 +90,7 @@ If the warning is a false positive, verify the actual code uses `update()` / `in
 
 The plugin recommends but does not bundle the Microsoft Learn MCP server.
 
-1. Configure `user-microsoft-learn` in Cursor MCP settings.
+1. Configure `microsoft-learn` in Cursor MCP settings.
 2. Agents will use it when Microsoft guidance is unclear.
 3. Without MCP, agents rely on skill reference docs and embedded Microsoft doc links.
 
