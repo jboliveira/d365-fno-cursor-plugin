@@ -3,8 +3,8 @@
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/lib/xpp-fno-common.ps1"
 
-$null = Read-HookStdinJson
-$projectDir = Get-ProjectDirFromHook
+$hookInput = Read-HookStdinJson
+$projectDir = Get-ProjectDirFromHook -HookInput $hookInput
 
 if (-not (Test-XppFnoWorkspace -ProjectDir $projectDir)) {
     Write-HookJson -Payload @{}

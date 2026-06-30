@@ -4,6 +4,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $hooksDir = Join-Path $repoRoot 'hooks'
 $failed = 0
+$psExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell' }
 
 function Invoke-HookTest {
     param(
@@ -15,7 +16,7 @@ function Invoke-HookTest {
 
     Write-Host "Testing $Name..."
     $env:XPP_FNO_WORKSPACE = '1'
-    $output = $StdinJson | & powershell -NoProfile -ExecutionPolicy Bypass -File $Script 2>&1
+    $output = $StdinJson | & $psExe -NoProfile -ExecutionPolicy Bypass -File $Script 2>&1
     $exitCode = $LASTEXITCODE
     if ($exitCode -ne 0) {
         Write-Host "  FAIL: exit code $exitCode" -ForegroundColor Red
@@ -58,9 +59,13 @@ Invoke-HookTest -Name 'preToolUse (domain hint)' `
         if ($out -notmatch 'xpp-fno-data') { throw 'Expected data skill hint for AxTable' }
     }
 
+$nonFnoDir = if ($IsLinux -or $IsMacOS) { '/tmp/xpp-fno-non-fno-smoke' } else { Join-Path $env:TEMP 'xpp-fno-non-fno-smoke' }
+New-Item -ItemType Directory -Force -Path $nonFnoDir | Out-Null
+$sessionStartJson = (@{ project_dir = $nonFnoDir } | ConvertTo-Json -Compress)
+
 Invoke-HookTest -Name 'sessionStart (non-F&O repo)' `
     -Script (Join-Path $hooksDir 'xpp-fno-session-start.ps1') `
-    -StdinJson '{"project_dir":"C:\\Windows\\Temp"}' `
+    -StdinJson $sessionStartJson `
     -Assert {
         param($out)
         if ($out.Trim() -ne '{}') { throw "Expected empty JSON for non-F&O path, got: $out" }
