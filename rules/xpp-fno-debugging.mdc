@@ -1,0 +1,27 @@
+---
+description: D365 F&O X++ debugging guardrails — reproduce in sandbox, trace CoC chain, Infolog, batch history before fixing
+globs: "**/AxClass/**,**/*.xpp"
+alwaysApply: false
+---
+
+# D365 F&O Debugging Standards
+
+Use when investigating failures in X++ classes or batch logic.
+
+## Before changing code
+
+- Reproduce in **sandbox** — never debug fixes on production
+- Capture full **Infolog** message and stack context
+- For CoC issues: verify `next` at first level and `[ExtensionOf]` target before editing logic
+- For batch failures: read **BatchJobHistory** and job parameters first
+- For post-upgrade issues: run **compatibility checker** against baseline
+
+## Avoid
+
+- Shotgun debugging (multiple unrelated changes)
+- Fixing symptoms without causal chain (e.g. swallowing exceptions without root cause)
+- Using `doUpdate`/`doInsert`/`doDelete` as a "fix" — bypasses CoC and validation
+
+## Invoke
+
+Use `/xpp-fno-debug` or `/xpp-fno-debugger` for systematic investigation. See skill `xpp-fno-debug` and [docs/debugging.md](../docs/debugging.md).

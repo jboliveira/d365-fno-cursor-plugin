@@ -1,0 +1,39 @@
+{
+  "name": "xpp-fno",
+  "displayName": "D365 F&O X++",
+  "version": "1.1.0",
+  "description": "Microsoft-aligned skills, rules, agents, commands, and hooks for D365 Finance & Operations X++ development.",
+  "author": {
+    "name": "Jader Bueno de Oliveira"
+  },
+  "homepage": "https://github.com/jaderbuenodeoliveira/d365-fno-cursor-plugin",
+  "repository": "https://github.com/jaderbuenodeoliveira/d365-fno-cursor-plugin",
+  "license": "MIT",
+  "logo": "assets/logo-padded.svg",
+  "keywords": [
+    "dynamics365",
+    "finance-operations",
+    "x++",
+    "chain-of-command",
+    "extensibility",
+    "d365",
+    "sysoperation",
+    "debugging",
+    "testing"
+  ],
+  "category": "developer-tools",
+  "tags": [
+    "d365-fno",
+    "xpp",
+    "microsoft",
+    "extensions",
+    "code-review",
+    "planning",
+    "verification"
+  ],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "rules": "./rules/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json"
+}

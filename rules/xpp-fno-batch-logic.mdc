@@ -1,0 +1,76 @@
+---
+description: D365 F&O batch and SysOperation — scenarios for new jobs, long-running processes, parameters, exceptions, performance
+globs: "**/AxClass/**,**/AxMenuItemAction/**"
+alwaysApply: false
+---
+
+# D365 F&O Batch and Business Logic
+
+Microsoft source: [Process automation](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/process-automation/run-process)
+
+## Core rules
+
+- New code: **SysOperationServiceController** over `RunBaseBatch`
+- Short TTS; checkpoints; idempotent chunks
+- ≤1000 batch tasks per job
+- Version `pack`/`unpack` when parameters change
+- Labels for all Infolog messages; surface `CLRError` to Infolog
+
+## Scenarios and recommendations
+
+### New scheduled export / import / calculation
+
+**Recommend:** Controller + service + contract/data contract classes; menu item + batch privilege; SysTest on service with ATL data.
+
+**Avoid:** New class extending `RunBaseBatch` for greenfield integration.
+
+### Long-running job (100k+ records)
+
+**Recommend:** Chunk by RecId or batch group; **commit per chunk**; store checkpoint RecId; design retry from checkpoint.
+
+**Avoid:** Single `ttsbegin`/`ttscommit` wrapping entire loop.
+
+### Many parallel batch tasks
+
+**Recommend:** ≤1000 tasks; each task processes a **set** (chunk), not one record per task.
+
+**Avoid:** 5000 tasks each updating one row.
+
+### Change batch job parameters after deployment
+
+**Recommend:** Increment version constant; `unpack` handles **prior and current** pack format.
+
+**Avoid:** Remove `conPeek` index without version branch — breaks in-flight jobs.
+
+### User-facing failure in batch
+
+**Recommend:** Outermost `try`/`catch`; `error("@MyPubLabel:Failed")`; retry `UpdateConflict`/`Deadlock` appropriately.
+
+**Avoid:** `throw Exception::Error`; silent catch; lost CLRError message.
+
+### Caching reference data in batch
+
+**Recommend:** Session-scoped temp tables or bounded cache; table cache where Microsoft documents it.
+
+**Avoid:** Unbounded static `Map` holding table data across batch tasks.
+
+## SysOperation vs RunBase
+
+```xpp
+// BAD — new integration export
+class MyPub_ExportBatch extends RunBaseBatch
+{
+    public void run() { /* ... */ }
+}
+
+// GOOD
+class MyPub_ExportController extends SysOperationServiceController
+{
+    public static void main(Args _args)
+    {
+        new MyPub_ExportController().startOperation();
+    }
+}
+```
+
+Skill: `xpp-fno-business-logic`. Data patterns: `xpp-fno-data-access`. Router: `xpp-fno-scenario-router`.

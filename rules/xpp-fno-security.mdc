@@ -1,0 +1,75 @@
+---
+description: D365 F&O security — RBAC, entry points, TPF, XDS; scenarios for menu items, entities, roles, row-level access
+globs: "**/AxSecurity*/**,**/AxMenuItem*/**,**/AxDataEntityView/**,**/AxClass/**"
+alwaysApply: false
+---
+
+# D365 F&O Security
+
+Microsoft source: [Security architecture](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/sysadmin/security-architecture)
+
+## Core rules
+
+- **Roles → Duties → Privileges → Permissions**
+- Secure every new **entry point**
+- **Least privilege** — no System Administrator for routine work
+- **Duplicate** standard roles — never modify standard artifacts
+- **TPF** for sensitive fields; **XDS** for row-level (performance-test queries)
+
+## Scenarios and recommendations
+
+### New menu item (display or action)
+
+**Recommend:** Create **Privilege** with menu item permission → add to **Duty** → assign Duty to **Role** (not 40 privileges on role directly).
+
+**Avoid:** Menu item with no privilege mapping; granting SysAdmin to test quickly.
+
+### New SysOperation / service entry point
+
+**Recommend:** Same as menu item — map privilege to service/class entry; document required duty in implementation guide.
+
+**Avoid:** Callable service only from code with no security artifact for ops team.
+
+### OData exposure of data entity
+
+**Recommend:** Entity permission with integration mode **DataServices** (or **All** if both DMF and OData needed).
+
+**Avoid:** Integration mode **All** when only OData is required (over-exposure).
+
+### DMF import/export only
+
+**Recommend:** Integration mode **DataManagement** on entity permission.
+
+**Avoid:** DataServices mode when entity never used for OData.
+
+### Sensitive field (pay rate, bank account)
+
+**Recommend:** **Table Permissions Framework** — enforced at AOS for all paths.
+
+**Avoid:** `visible(false)` on form control only.
+
+### Row-level filter by org/unit/cust group
+
+**Recommend:** **XDS** policy with minimal join set; constrained tables list; Trace Parser validation; diagnostic bypass role.
+
+**Avoid:** Broad XDS joining many tables on every read of base table.
+
+### Customize permissions for existing role template
+
+**Recommend:** Copy standard role to `MyPub_*` → add duties to copy.
+
+**Avoid:** Edit `Accounts receivable clerk` or other standard role in place.
+
+## Entry point example
+
+```xpp
+// BAD
+// MenuItem MyPub_ExportOrders — no SecurityPrivilege
+
+// GOOD
+// Privilege MyPub_ExportOrdersMaintain → MenuItem MyPub_ExportOrders (Read)
+// Duty MyPub_OrderManagementDuty → includes privilege
+// Role MyPub_OrderClerkRole → includes duty
+```
+
+Skill: `xpp-fno-security`. Router: `xpp-fno-scenario-router`.

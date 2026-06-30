@@ -1,0 +1,71 @@
+---
+description: D365 F&O X++ extensibility — CoC, ExtensionOf, events; scenarios for table, form, class, entity extensions
+globs: "**/AxClass/**,**/AxForm/**,**/AxTable/**,**/AxDataEntityView/**"
+alwaysApply: false
+---
+
+# D365 F&O Extensibility
+
+Microsoft source: [Method wrapping / CoC](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/extensibility/method-wrapping-coc)
+
+## Core rules
+
+- `next` **unconditional at first level** — not inside if/while/for
+- Wrapper signature matches base — no default param values in wrapper
+- `[ExtensionOf(classStr(...))] final class MyPub_X_Extension`
+- Separate extension class per form datasource/control CoC
+- Prefer **CoC over delegates** when extracted methods exist (PU 7.3+)
+- Event handlers: additive only — never unconditionally set `EventHandlerResult`
+
+## Scenarios and recommendations
+
+### Extend table validation (`validateWrite`, `validateInsert`)
+
+**Recommend:** CoC on table methods via `[ExtensionOf(tableStr(...))]`; call `next` first, then apply custom rules.
+
+**Avoid:** Overlay table; validate only in form without table CoC (bypasses non-UI callers).
+
+### Extend form behavior (init, clicked, datasource events)
+
+**Recommend:** Form extension for controls; **separate** `[ExtensionOf(formDataSourceStr(...))]` / `[ExtensionOf(formControlStr(...))]` classes for CoC.
+
+**Avoid:** One monolithic extension class for all datasources; inline control code duplicating CoC structure.
+
+### Side effect after insert/update (audit, sync)
+
+**Recommend:** CoC on `insert`/`update` if wrappable; else Pre/Post **event handler** that does not block base unless business requires it.
+
+**Avoid:** `doInsert`/`doUpdate`; setting `EventHandlerResult` unconditionally in Pre handlers.
+
+### Replace branching logic (switch on enum/type)
+
+**Recommend:** Extract default to `[Replaceable]` method; extend via CoC on replaceable method.
+
+**Avoid:** Large switch with `default: throw` in a method others need to extend.
+
+### Static helpers on standard types
+
+**Recommend:** Static class `MyPub_CustTable_Extension` with target type as first parameter — utility only.
+
+**Avoid:** Static extensions that hold state or replace instance behavior.
+
+## CoC example
+
+```xpp
+// BAD — conditional next
+public boolean validateWrite()
+{
+    if (this.MyField) { ret = next validateWrite(); }
+    return ret;
+}
+
+// GOOD
+public boolean validateWrite()
+{
+    boolean ret = next validateWrite();
+    if (ret && this.MyField) { ret = this.validateCustomRule(); }
+    return ret;
+}
+```
+
+Skill: `xpp-fno-extensibility`. Router: `xpp-fno-scenario-router`.

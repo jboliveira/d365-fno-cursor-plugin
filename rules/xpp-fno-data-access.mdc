@@ -1,0 +1,74 @@
+---
+description: D365 F&O X++ data access — forUpdate, TTS, set-based ops; scenarios for CRUD, bulk, concurrency, entities
+globs: "**/AxTable/**,**/AxQuery/**,**/AxClass/**,**/AxDataEntityView/**"
+alwaysApply: false
+---
+
+# D365 F&O Data Access
+
+Microsoft source: [Transactional integrity](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/dev-ref/xpp-data/xpp-transaction)
+
+## Core rules
+
+- `select forUpdate` before every update or delete
+- Mutate in the **same TTS scope** as `forUpdate`
+- Set-based ops over row-by-row loops for bulk work
+- Joins over N+1 nested while-select
+- Catch `UpdateConflict` / `Deadlock` with explicit type + `retry`
+
+## Scenarios and recommendations
+
+### Single-record update in service or CoC
+
+**Recommend:** `ttsbegin` → `select forupdate` → mutate → `update()` → `ttscommit`; null-check buffer.
+
+**Avoid:** Update without `forUpdate`; `doUpdate()`.
+
+### Bulk update (thousands+ rows)
+
+**Recommend:** `update_recordset` or chunked loops with **short TTS** per chunk; validate with Trace Parser.
+
+**Avoid:** One `ttsbegin` around entire `while select` loop.
+
+### Staging import / high-volume insert
+
+**Recommend:** `RecordInsertList`, `insert_recordset`, or DMF entity — match volume to pattern.
+
+**Avoid:** Row-by-row `insert()` inside tight loop without batching.
+
+### Read-only inquiry / report prep
+
+**Recommend:** Single query with joins; use field lists on large tables where appropriate.
+
+**Avoid:** `forUpdate` on read-only paths; nested selects in loop (N+1).
+
+### Concurrent updates (two users/processes)
+
+**Recommend:** Catch `Exception::UpdateConflict` outside inner TTS or use `retry` when `appl.ttsLevel() == 0`.
+
+**Avoid:** Swallowing exceptions; infinite retry without limit.
+
+### Custom data entity for integration
+
+**Recommend:** Built-in entity when sufficient; **custom entity** for high-volume/low-latency; normalize source tables.
+
+**Avoid:** Redundant copy tables; entity without correct security integration mode.
+
+## forUpdate example
+
+```xpp
+// BAD
+ttsbegin;
+select custTable where custTable.AccountNum == _accountNum;
+custTable.CreditMax = 5000;
+custTable.update();
+ttscommit;
+
+// GOOD
+ttsbegin;
+select forupdate custTable where custTable.AccountNum == _accountNum;
+if (custTable) { custTable.CreditMax = 5000; custTable.update(); }
+ttscommit;
+```
+
+Skill: `xpp-fno-data`. Router: `xpp-fno-scenario-router`.

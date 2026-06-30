@@ -1,0 +1,73 @@
+---
+description: D365 F&O X++ extensible design — SOLID, DRY; scenarios for services, CoC-friendly APIs, batch classes
+globs: "**/AxClass/**"
+alwaysApply: false
+---
+
+# D365 F&O Extensible Design
+
+Microsoft source: [Write extensible code](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/extensibility/writing-extensible-code)
+
+## Core rules
+
+- Methods **5–10 lines**, ≤2 parameters
+- Minimize surface: `private` > `internal` > `protected` > `public`
+- **DRY** — no duplicated logic across extension points
+- Extract switch defaults to `[Replaceable]` methods
+- Use `parm*` accessors; params prefixed with `_`
+
+## Scenarios and recommendations
+
+### New application service class
+
+**Recommend:** Single responsibility; public methods delegate to small protected methods; inject behavior via CoC on protected methods where extenders need hooks.
+
+**Avoid:** 200-line `run()`; public fields; calling kernel/system classes directly.
+
+### Extending standard process without copying method
+
+**Recommend:** CoC on extracted sub-methods; `[Replaceable]` for switch defaults.
+
+**Avoid:** Copy entire standard method into extension class.
+
+### Duplicate logic in CoC + event handler
+
+**Recommend:** One private method on extension class; both entry points call it.
+
+**Avoid:** Same validation copied in form CoC and table CoC with drift risk.
+
+### Batch / SysOperation service structure
+
+**Recommend:** Controller → service → contract; service methods ≤10 lines; `parm*` for state.
+
+**Avoid:** Business logic in controller; many boolean params — use contract class.
+
+### Factory / plug-in specialization
+
+**Recommend:** Depend on interface or base class; Liskov-safe implementations registered via SysExtension.
+
+**Avoid:** `switch` on company or module enum for implementation choice in consumer.
+
+## Extract example
+
+```xpp
+// BAD — blocking default prevents extension
+public void processOrder(SalesId _salesId)
+{
+    switch (orderType)
+    {
+        case TypeA: /* ... */
+        case TypeB: /* ... */
+        default: throw error("@SYS21468");
+    }
+}
+
+// GOOD
+public void processOrder(SalesId _salesId)
+{
+    this.validateOrder(_salesId);
+    this.processOrderByType(_salesId); // Replaceable / CoC target
+}
+```
+
+Skill: `xpp-fno-extensible-design`. Router: `xpp-fno-scenario-router`.

@@ -1,0 +1,61 @@
+---
+description: D365 F&O X++ universal pillars — extensions, labels, do* methods, BP, scenarios for new features and upgrades
+globs: "**/AxClass/**,**/AxTable/**,**/AxForm/**,**/AxDataEntityView/**,**/AxEnum/**,**/AxEdt/**,**/AxQuery/**,**/*.xpp"
+alwaysApply: false
+---
+
+# D365 F&O Core Standards
+
+Microsoft source: [Extend F&O apps](https://learn.microsoft.com/dynamics365/guidance/implementation-guide/extend-your-solution-guidance-product-fo)
+
+## Non-negotiables
+
+- **Extensions only** — never overlayer (sealed models since v8.0)
+- **Publisher prefix** on all new artifacts
+- **Labels** (`@LabelId`) — no hardcoded user-facing strings
+- Use `update()` / `insert()` / `delete()` — never `doUpdate()` / `doInsert()` / `doDelete()`
+- Target **zero BP deviations**; run compatibility checker before release
+
+## Scenarios and recommendations
+
+### New customization in ISV/custom model
+
+| Do | Don't |
+|----|-------|
+| Create artifacts in your publisher model only | Modify Microsoft sealed/base models in place |
+| Name with publisher prefix (`MyPub_`) | Reuse `@SYS` labels or standard object names |
+| Choose extension technique from hierarchy (metadata → CoC → events → plugin) | Jump to overlay because it is faster short-term |
+
+### Upgrade / platform update incoming
+
+| Do | Don't |
+|----|-------|
+| Run compatibility checker against last baseline | Change protected/public signatures without major version plan |
+| Keep pack/unpack backward compatible for batch jobs | Remove fields from parameter containers without version branch |
+| Duplicate standard security roles before editing | Edit standard `SecurityRole` artifacts |
+
+### User-visible message or label change
+
+| Do | Don't |
+|----|-------|
+| Add new label file entries (`@MyPubLabel:Key`) | Hardcode strings in X++ or form captions |
+| Reference labels in `info`/`error`/`warning` | Modify existing Microsoft label IDs |
+
+### Persisting table data from custom code
+
+```xpp
+// BAD — skips CoC, events, validation, security
+custTable.doUpdate();
+
+// GOOD
+ttsbegin;
+select forupdate custTable where custTable.AccountNum == _accountNum;
+if (custTable)
+{
+    custTable.CreditMax = _amount;
+    custTable.update();
+}
+ttscommit;
+```
+
+Skill: `xpp-fno-development`. Scenarios: `xpp-fno-scenario-router`. PR: `/xpp-fno-code-review`.

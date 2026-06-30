@@ -1,0 +1,76 @@
+---
+description: D365 F&O X++ testing — SysTest, ATL; scenarios for unit tests, integration tests, pre-check-in, regression
+globs: "**/AxClass/*Test*/**,**/AxClass/**/*Test*.xml,**/AxClass/**"
+alwaysApply: false
+---
+
+# D365 F&O Testing
+
+Microsoft source: [SysTest in Visual Studio](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/perf-test/testing-support)
+
+## Core rules
+
+- `extends SysTestCase` + `[SysTestMethod]`
+- **AutoRollback** (default) — never run on production
+- **Data-agnostic** — ATL creates data; no demo dependency
+- ATL fluent: `var item = items.default();`
+- Names: `when_given_then`
+
+## Scenarios and recommendations
+
+### Unit test new business rule / service method
+
+**Recommend:** `MyPub_ServiceTest extends SysTestCase`; ATL setup; assert outcome; `[SysTestMethod]` per case; `when_given_then` name.
+
+**Avoid:** `test1()`; relying on `US-001` demo customer existing.
+
+### Test expected exception path
+
+**Recommend:** `this.parmExceptionExpected(true);` before call; descriptive method name e.g. `reservingItem_noOnhand_exception`.
+
+**Avoid:** Empty catch swallowing failure.
+
+### Component test across table + class
+
+**Recommend:** ATL navigation/creators/commands; keep test data creation in test method or setup helper.
+
+**Avoid:** Manual `insert()` of dozens of related tables without ATL.
+
+### Pre-check-in gate
+
+**Recommend:** Run SysTest locally; BP zero on changed models; add test for every new public business rule.
+
+**Avoid:** Check-in without test because "hard to set up data".
+
+### Regression after CoC change
+
+**Recommend:** Tests call through public entry point (service or table method) so CoC chain executes.
+
+**Avoid:** Testing private method copy bypassing CoC.
+
+### Performance / load testing
+
+**Recommend:** Separate perf test project; not mixed with unit SysTest suite; use Trace Parser for hotspots.
+
+**Avoid:** Long-running load tests with AutoRollback disabled on shared dev box without coordination.
+
+## SysTest example
+
+```xpp
+// BAD
+class MyTest { public void test1() { } }
+
+// GOOD
+class MyPub_OrderTest extends SysTestCase
+{
+    [SysTestMethod]
+    public void reservingItem_noOnhand_exception()
+    {
+        var item = items.default().setOnHand(0);
+        this.parmExceptionExpected(true);
+        MyPub_ReservationService::reserve(item.ItemId, 1);
+    }
+}
+```
+
+Skill: `xpp-fno-testing`. PR checklist: `/xpp-fno-code-review`. Router: `xpp-fno-scenario-router`.

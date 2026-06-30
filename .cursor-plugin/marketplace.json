@@ -1,0 +1,17 @@
+{
+  "name": "xpp-fno",
+  "displayName": "D365 F&O X++",
+  "metadata": {
+    "description": "Dynamics 365 Finance and Operations X++ plugin for Cursor — Microsoft-aligned extensibility, CoC, batch, security, forms, SysTest, and lifecycle automation for Ax* projects.",
+    "version": "1.1.0"
+  },
+  "plugins": [
+    {
+      "name": "xpp-fno",
+      "source": ".",
+      "description": "F&O X++ development kit: 12 skills (59+ atomic rules), 10 Ax* guardrail rules, 4 agents (plan, implement, review, debug), 6 slash commands, and hooks for session context, write hints, and implementer→reviewer chaining. Extensions-only — not AX 2012 or Business Central.",
+      "logo": "assets/logo-padded.svg",
+      "version": "1.1.0"
+    }
+  ]
+}

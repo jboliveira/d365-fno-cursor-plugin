@@ -1,0 +1,62 @@
+---
+description: D365 F&O form UI — patterns, workspaces; scenarios for new forms, extensions, inquiries, dashboards
+globs: "**/AxForm/**"
+alwaysApply: false
+---
+
+# D365 F&O Forms and UI
+
+Microsoft source: [Form styles and patterns](https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/user-interface/form-styles-patterns)
+
+## Core rules
+
+- Apply **standard form pattern** via designer — avoid Custom unless required
+- Use **Operational Workspace** — not legacy Workspace
+- Form **extensions** + CoC classes — never overlayer
+- No monster all-in-one forms
+- Captions via `@LabelId`
+
+## Scenarios and recommendations
+
+### New transaction entry form (header + lines)
+
+**Recommend:** **DetailsFormTransaction** or **SimpleListDetails** from pattern catalog; apply via designer.
+
+**Avoid:** Custom pattern with manual tabs/grids fighting responsive layout.
+
+### New role-based dashboard / hub
+
+**Recommend:** **Operational Workspace** with tiles, tabbed lists, form parts.
+
+**Avoid:** Legacy **Workspace** pattern (deprecated); single form with 10+ unrelated tabs.
+
+### Add field/control to standard form
+
+**Recommend:** **Form extension** artifact; label reference on caption; optional CoC on datasource for behavior.
+
+**Avoid:** Overlayer base form; hardcoded `"Customer account"` caption.
+
+### Form-only validation (user experience)
+
+**Recommend:** CoC on form datasource `validateWrite` **and** table validation if data can be written non-UI (entity, batch).
+
+**Avoid:** Validation only in `control.modified()` — bypassed by integration.
+
+### Embedded child form / part
+
+**Recommend:** Form part pattern; keep parent form focused on one process.
+
+**Avoid:** Monster form duplicating multiple standard forms inline.
+
+## Workspace example
+
+```xpp
+// BAD — new workspace
+// Pattern: Workspace (legacy)
+
+// GOOD — new workspace
+// Pattern: Operational Workspace
+// Designer: Right-click root > Apply pattern > Operational Workspace
+```
+
+Skill: `xpp-fno-forms-ui`. Router: `xpp-fno-scenario-router`.

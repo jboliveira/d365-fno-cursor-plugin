@@ -1,0 +1,27 @@
+name: Verify Plugin
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify plugin structure
+        shell: pwsh
+        run: ./scripts/verify-plugin.ps1
+
+      - name: Smoke test hooks
+        shell: pwsh
+        run: ./scripts/smoke-test-hooks.ps1
+
+      - name: Run test scripts
+        shell: pwsh
+        run: |
+          ./tests/verify-manifest.ps1
+          ./tests/hook-output.test.ps1
