@@ -174,7 +174,7 @@ Use the **reviewer agent** for pre-merge validation. Use the **code-review skill
 
 ## Project overrides
 
-The [d365-fno-cursor-template](https://github.com/jaderbuenodeoliveira/d365-fno-cursor-template) can ship project-level agents at `.cursor/agents/` to override plugin defaults for repo-specific conventions (publisher prefix, model name, etc.).
+The [d365-fno-cursor-template](https://github.com/jboliveira/d365-fno-cursor-template) can ship project-level agents at `.cursor/agents/` to override plugin defaults for repo-specific conventions (publisher prefix, model name, etc.).
 
 ## See also
 

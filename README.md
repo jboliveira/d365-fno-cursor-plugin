@@ -117,7 +117,7 @@ See [Getting started — Coexistence / migration](docs/getting-started.md#coexis
 
 ## Project template
 
-Use [d365-fno-cursor-template](https://github.com/jaderbuenodeoliveira/d365-fno-cursor-template) as a starter F&O repo with optional project-level agent overrides.
+Use [d365-fno-cursor-template](https://github.com/jboliveira/d365-fno-cursor-template) as a starter F&O repo with optional project-level agent overrides.
 
 ## Brand assets
 

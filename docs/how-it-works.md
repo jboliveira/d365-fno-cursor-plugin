@@ -150,7 +150,7 @@ See [Commands](commands.md).
 | `postToolUse` | After Write/StrReplace on Ax* | Warn on do* methods, CoC `next` placement |
 | `subagentStop` | Implementer completes | Chain to reviewer |
 
-**Local IDE only** for plugin hooks. For Cloud Agents, use project-level hooks from [d365-fno-cursor-template](https://github.com/jaderbuenodeoliveira/d365-fno-cursor-template).
+**Local IDE only** for plugin hooks. For Cloud Agents, use project-level hooks from [d365-fno-cursor-template](https://github.com/jboliveira/d365-fno-cursor-template).
 
 See [Hooks](hooks.md).
 
