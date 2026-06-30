@@ -1,5 +1,5 @@
-<p align="center">
-  <img src="assets/logo.svg" alt="D365 F&amp;O X++" width="128" height="128"/>
+<p>
+  <img src="assets/banner.png" alt="D365 F&amp;O X++"/>
 </p>
 
 # D365 F&O X++ Cursor Plugin
@@ -39,7 +39,7 @@ flowchart TD
 
 ## Installation
 
-### Marketplace (after publish)
+### Cursor Marketplace
 
 In Cursor Agent chat:
 

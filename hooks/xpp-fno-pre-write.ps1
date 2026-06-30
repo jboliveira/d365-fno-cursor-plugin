@@ -4,7 +4,7 @@ $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/lib/xpp-fno-common.ps1"
 
 $hookPayload = Read-HookStdinJson
-$projectDir = Get-ProjectDirFromHook
+$projectDir = Get-ProjectDirFromHook -HookInput $hookPayload
 
 $isFnoWorkspace = ($env:XPP_FNO_WORKSPACE -eq '1') -or (Test-XppFnoWorkspace -ProjectDir $projectDir)
 if (-not $isFnoWorkspace) {

@@ -108,6 +108,15 @@ function Write-HookJson {
 }
 
 function Get-ProjectDirFromHook {
+    param($HookInput)
+
+    if ($null -ne $HookInput) {
+        $fromInput = [string]$HookInput.project_dir
+        if (-not [string]::IsNullOrWhiteSpace($fromInput)) {
+            return $fromInput
+        }
+    }
+
     if (-not [string]::IsNullOrWhiteSpace($env:CURSOR_PROJECT_DIR)) {
         return $env:CURSOR_PROJECT_DIR
     }
